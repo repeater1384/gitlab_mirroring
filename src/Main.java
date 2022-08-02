@@ -1,40 +1,63 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+class Node {
+	int left;
+	int right;
+
+	public Node(int left, int right) {
+		this.left = left;
+		this.right = right;
+	}
+
+}
 
 public class Main {
+	static Node[] arr;
+	static ArrayList<Integer> inorder_result;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		for (int tc = 1; tc <= 10; tc++) {
-			br.readLine();
-			int cx = 0, cy = 0;
-			int[][] map = new int[100][100];
-			for (int i = 0; i < 100; i++) {
-				StringTokenizer st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < 100; j++) {
-					map[i][j] = Integer.parseInt(st.nextToken());
-					if (map[i][j] == 2) {
-						cx = j;
-						cy = i;
-					}
-				}
-			}
+		int N = Integer.parseInt(br.readLine());
+		arr = new Node[N + 1];
+		inorder_result = new ArrayList<>();
+		int answer = 0;
+		for (int i = 0; i < N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			int c = Integer.parseInt(st.nextToken());
+			if (b != -1)
+				answer += 2;
+			if (c != -1)
+				answer += 2;
+			arr[a] = new Node(b, c);
+		}
 
-			while (cy > 0) {
-				boolean move = false;
-				while (cx - 1 >= 0 && map[cy][cx - 1] == 1) {
-					cx--;
-					move = true;
-				}
-				if (!move) {
-					while (cx + 1 < 100 && map[cy][cx + 1] == 1)
-						cx++;
-				}
-				cy--;
+		inorder1(1);
+		int target = inorder_result.get(N - 1);
+		int cur_idx = 1;
+		while (true) {
+			if (cur_idx == target) {
+				System.out.println(answer);
+				break;
 			}
-
-			System.out.printf("#%d %d\n", tc, cx);
+			answer--;
+			cur_idx = arr[cur_idx].right;
 
 		}
 	}
+
+	static void inorder1(int idx) {
+		Node cur = arr[idx];
+		if (cur.left != -1)
+			inorder1(cur.left);
+		inorder_result.add(idx);
+		if (cur.right != -1)
+			inorder1(cur.right);
+	}
+
 }
