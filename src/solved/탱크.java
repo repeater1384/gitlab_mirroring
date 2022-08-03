@@ -1,6 +1,7 @@
+package solved;
 import java.util.Scanner;
 
-public class Solution {
+public class 탱크 {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
@@ -18,6 +19,7 @@ public class Solution {
 				matrix[i] = sc.next().toCharArray();
 			}
 
+			
 			int cx = 0;
 			int cy = 0;
 			int di = 0;
@@ -43,72 +45,72 @@ public class Solution {
 					}
 				}
 			}
-
+			
+			
 			int n_cmd = sc.nextInt();
 			char[] cmd = sc.next().toCharArray();
 			for (int i = 0; i < n_cmd; i++) {
 				char cur = cmd[i];
-				if (cur == 'U') {
+				if(cur == 'U') {
 					di = 0;
 					matrix[cy][cx] = '^';
-					if (cy - 1 >= 0 && matrix[cy - 1][cx] == '.') {
+					if(cy-1>=0 && matrix[cy-1][cx]=='.') {
 						matrix[cy--][cx] = '.';
 						matrix[cy][cx] = '^';
 					}
 				}
-
-				if (cur == 'R') {
+				
+				if(cur == 'R') {
 					di = 1;
 					matrix[cy][cx] = '>';
-					if (cx + 1 < M && matrix[cy][cx + 1] == '.') {
+					if(cx+1<M && matrix[cy][cx+1]=='.') {
 						matrix[cy][cx++] = '.';
 						matrix[cy][cx] = '>';
 					}
 				}
-
-				if (cur == 'D') {
+				
+				if(cur == 'D') {
 					di = 2;
 					matrix[cy][cx] = 'v';
-					if (cy + 1 < N && matrix[cy + 1][cx] == '.') {
+					if(cy+1<N && matrix[cy+1][cx]=='.') {
 						matrix[cy++][cx] = '.';
 						matrix[cy][cx] = 'v';
 					}
 				}
-
-				if (cur == 'L') {
+				
+				if(cur == 'L') {
 					di = 3;
 					matrix[cy][cx] = '<';
-					if (cx - 1 >= 0 && matrix[cy][cx - 1] == '.') {
+					if(cx-1>=0 && matrix[cy][cx-1]=='.') {
 						matrix[cy][cx--] = '.';
 						matrix[cy][cx] = '<';
 					}
 				}
-
-				if (cur == 'S') {
+				
+				if(cur=='S') {
 					int bx = cx;
 					int by = cy;
-
-					while (true) {
+					
+					while(true) {
 						bx += dx[di];
 						by += dy[di];
-						if (bx < 0 || bx >= M || by < 0 || by >= N) {
+						if(bx<0 || bx>=M || by<0 || by>=N) {
 							break;
 						}
-						if (matrix[by][bx] == '*') {
+						if(matrix[by][bx]=='*') {
 							matrix[by][bx] = '.';
 							break;
-						}
-						if (matrix[by][bx] == '#') {
+						}if(matrix[by][bx]=='#') {
 							break;
 						}
 					}
 				}
 
 			}
-
-			System.out.print("#" + tc + " ");
-			for (char[] row : matrix) {
-				for (char e : row) {
+			
+			System.out.print("#"+tc+" ");
+			for(char[] row :matrix) {
+				for(char e:row) {
 					System.out.print(e);
 				}
 				System.out.println();
