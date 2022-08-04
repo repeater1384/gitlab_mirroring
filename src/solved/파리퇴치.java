@@ -1,6 +1,7 @@
+package solved;
 import java.util.Scanner;
 
-public class Solution {
+public class 파리퇴치 {
 	public static void main(String args[]) {
 		Scanner sc = new Scanner(System.in);
 
