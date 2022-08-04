@@ -28,11 +28,10 @@ public class Main {
 					dp[0][i][j] = dp[0][i][j - 1] + dp[2][i][j - 1];
 					dp[1][i][j] = dp[1][i - 1][j] + dp[2][i - 1][j];
 				}
-				if (i-2>=0 && matrix[i - 1][j - 1] != 1 && matrix[i - 1][j - 2] != 1 && matrix[i - 2][j - 1] != 1)
+				if (i - 2 >= 0 && matrix[i - 1][j - 1] != 1 && matrix[i - 1][j - 2] != 1 && matrix[i - 2][j - 1] != 1)
 					dp[2][i][j] = dp[0][i - 1][j - 1] + dp[1][i - 1][j - 1] + dp[2][i - 1][j - 1];
 			}
 		}
-		System.out.println(Arrays.deepToString(dp));
 		System.out.println(dp[0][N][N] + dp[1][N][N] + dp[2][N][N]);
 	}
 
