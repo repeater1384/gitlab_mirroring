@@ -1,9 +1,10 @@
+package solved;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
+public class 완전이진트리중위순회 {
 	static List<List<Integer>> answer;
 
 	public static void main(String[] args) {

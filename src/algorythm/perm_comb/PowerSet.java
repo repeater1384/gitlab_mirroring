@@ -1,4 +1,4 @@
-package algorythm;
+package algorythm.perm_comb;
 
 import java.util.ArrayList;
 import java.util.List;
