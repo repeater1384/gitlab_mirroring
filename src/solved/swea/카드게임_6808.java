@@ -1,6 +1,7 @@
+package solved.swea;
 import java.util.*;
 
-class Solution {
+class 카드게임_6808 {
 	static int[] arr;
 	static int[] arr2;
 	static int win;
