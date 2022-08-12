@@ -1,62 +1,26 @@
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-class Solution {
-	static int[] arr;
-	static int[] arr2;
-	static int win;
-	static int lose;
+public class Solution {
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int T = sc.nextInt();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = 10;
 		for (int tc = 1; tc <= T; tc++) {
-			arr = new int[9];
-			int[] card = new int[19];
-
-			for (int i = 1; i < 19; i++)
-				card[i] = i;
-			for (int i = 0; i < 9; i++) {
-				arr[i] = sc.nextInt();
-				card[arr[i]] = 0;
+			int N = Integer.parseInt(br.readLine());
+			int answer = 1;
+			while (N-- > 0) {
+				String[] arr = br.readLine().split(" ");
+				char value = arr[1].charAt(0);
+				boolean isOp = value == '+' || value == '-' || value == '*' || value == '/';
+				if (isOp && arr.length != 4)
+					answer = 0;
+				if (!isOp && arr.length != 2)
+					answer = 0;
 			}
 
-			arr2 = new int[9];
-			int idx = 0;
-			for (int i = 1; i < 19; i++) {
-				if (card[i] != 0)
-					arr2[idx++] = card[i];
-			}
-			win = 0;
-			lose = 0;
-			perm(0, new boolean[9], new int[9]);
-			System.out.printf("#%d %d %d\n", tc, win, lose);
-		}
-		sc.close();
-	}
-
-	static void perm(int depth, boolean[] visited, int[] result) {
-		if (depth == 9) {
-			int check = 0;
-			for (int i = 0; i < 9; i++) {
-				if (arr[i] > arr2[result[i]])
-					check += arr[i] + arr2[result[i]];
-				else
-					check -= arr[i] + arr2[result[i]];
-			}
-
-			if (check > 0)
-				win++;
-			else
-				lose++;
-
-		}
-		for (int i = 0; i < 9; i++) {
-			if (!visited[i]) {
-				visited[i] = true;
-				result[depth] = i;
-				perm(depth + 1, visited, result);
-				visited[i] = false;
-			}
+			System.out.printf("#%d %d\n", tc, answer);
 		}
 	}
 

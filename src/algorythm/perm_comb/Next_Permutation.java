@@ -15,9 +15,7 @@ public class Next_Permutation {
 			int temp = arr[i];
 			arr[i] = arr[j];
 			arr[j] = temp;
-//			System.out.println("prv"+Arrays.toString(arr));
 			Arrays.sort(arr, i+1, N);
-//			System.out.println("sort"+Arrays.toString(arr));
 			return arr;
 		}
 		return null;

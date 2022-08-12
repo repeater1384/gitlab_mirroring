@@ -29,10 +29,11 @@ public class Combination {
 			return;
 		}
 		for (int i = start; i < arr.length; i++) {
+//			System.out.println(Arrays.toString(result)+" "+i+" "+start);
 			if (!visited[i]) {
 				visited[i] = true;
 				result[depth] = arr[i];
-				make(depth + 1,start+1);
+				make(depth + 1,i+1);
 				result[depth] = 0;
 				visited[i] = false;
 			}
