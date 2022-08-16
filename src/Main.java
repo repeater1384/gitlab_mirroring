@@ -1,37 +1,23 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		int N = sc.nextInt();
-		boolean[] isPrime = new boolean[N + 1];
-		Arrays.fill(isPrime, true);
-		List<Integer> primes = new ArrayList<>();
-		isPrime[2] = true;
-		for (int i = 2; i < N + 1; i++) {
-			if (isPrime[i]) {
-				primes.add(i);
-				for (int j = i * 2; j < N + 1; j += i)
-					isPrime[j] = false;
+		int[][] arr = new int[N][2];
+		for (int i = 0; i < N; i++)
+			arr[i] = new int[] { sc.nextInt(), sc.nextInt() };
+		Arrays.sort(arr, (a, b) -> a[1] - b[1]);
+		
+		int answer = 1;
+		int cur = arr[0][1];
+		for(int i = 1 ; i<N;i++) {
+			if(cur < arr[i][0]) {
+				cur = arr[i][0];
+				answer++;
 			}
 		}
-
-		int sum = 0;
-		int end = 0;
-		int answer = 0;
-
-		for (int start = 0; start < primes.size(); start++) {
-			while (sum < N && end < primes.size())
-				sum += primes.get(end++);
-			if (sum == N)
-				answer++;
-			sum -= primes.get(start);
-		}
-		
 		System.out.println(answer);
 		sc.close();
 	}

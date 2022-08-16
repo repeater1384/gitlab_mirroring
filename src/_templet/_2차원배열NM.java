@@ -4,15 +4,16 @@
 //import java.util.StringTokenizer;
 //
 //public class Main {
-//
+//	static int N;
+//  static int M;
+//  static int[][] arr;
 //	public static void main(String[] args) throws IOException {
 //		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 //		StringTokenizer st = new StringTokenizer(br.readLine());
-//		int N = Integer.parseInt(st.nextToken());
-//		int M = Integer.parseInt(st.nextToken());
-//		int K = Integer.parseInt(st.nextToken());
+//		N = Integer.parseInt(st.nextToken());
+//		M = Integer.parseInt(st.nextToken());
 //
-//		int[][] arr = new int[N][M];
+//		arr =  new int[N][M];
 //
 //		for (int i = 0; i < N; i++) {
 //			st = new StringTokenizer(br.readLine());

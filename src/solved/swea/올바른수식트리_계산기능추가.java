@@ -1,3 +1,4 @@
+package solved.swea;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +16,7 @@ class Node {
 
 }
 
-public class Solution {
+public class 올바른수식트리_계산기능추가 {
 	static Node[] nodes;
 	static char[] values;
 

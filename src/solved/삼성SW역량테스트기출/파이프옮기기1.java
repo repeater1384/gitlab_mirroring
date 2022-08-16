@@ -1,4 +1,4 @@
-package solved.A형기출;
+package solved.삼성SW역량테스트기출;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
