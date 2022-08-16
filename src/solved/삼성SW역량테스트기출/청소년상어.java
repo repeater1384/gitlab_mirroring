@@ -1,3 +1,4 @@
+package solved.삼성SW역량테스트기출;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +40,7 @@ class Fish {
 
 }
 
-public class Main {
+public class 청소년상어 {
 	static int N = 4;
 	static Fish[][] matrix;
 	static int[] dx = { 0, -1, -1, -1, 0, 1, 1, 1 };
