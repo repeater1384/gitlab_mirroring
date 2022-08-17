@@ -3,10 +3,10 @@ public class temp {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int a = 1;
-		if (a == 1 | a++ == 1) {
-		}
-		System.out.println(a);
+		System.out.println(-1%4);
+		int cnt = 4;
+		while(cnt-- > 0) {}
+		System.out.println(cnt);
 	}
 
 }
