@@ -6,87 +6,52 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class Main {
-	static int N, L, R;
-	static int[] dx = { 0, 1, 0, -1 };
-	static int[] dy = { -1, 0, 1, 0 };
-	static int[][] arr;
-	static boolean[][] visited;
+	static List<List<Integer>> adjList;
+	static int answer = 0;
+	static int tempNode = -1;
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt();
-		L = sc.nextInt();
-		R = sc.nextInt();
-		arr = new int[N][N];
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j < N; j++)
-				arr[i][j] = sc.nextInt();
-
-		int answer = 0;
-		while (true) {
-//			for (int[] i : arr) {
-//				System.out.println(Arrays.toString(i));
-//			}
-			visited = new boolean[N][N];
-			boolean changed = false;
-			for(int i = 0 ;i<N;i++) {
-				for(int j = 0 ;j<N;j++) {
-					if(!visited[i][j])
-						changed |= bfs(j,i);
+		int T = sc.nextInt();
+		while (T-- > 0) {
+			int N = sc.nextInt();
+			int[] arr = new int[N];
+			for (int i = 0; i < N; i++)
+				arr[i] = sc.nextInt();
+			int[][] table = new int[N][N];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (i != j)
+						table[i][j] = arr[i] ^ j;
 				}
 			}
-			
-			if(!changed)break;
-			answer++;
-		}
-		System.out.println(answer);
 
-		sc.close();
-	}
+			List<int[]> edges = new ArrayList<>();
+			for (int i = 0; i < N - 1; i++)
+				for (int j = i + 1; j < N; j++)
+					if (table[i][j] < table[j][i])
+						edges.add(new int[] { i, j });
 
-	static boolean bfs(int sx, int sy) {
-		// 두개 이상 바꾸면 true
-		Queue<int[]> queue = new LinkedList<>();
-
-		queue.add(new int[] { sx, sy });
-		visited[sy][sx] = true;
-		List<int[]> allPos = new ArrayList<>();
-
-		int unionSum = 0;
-		int unionSize = 0;
-		while (!queue.isEmpty()) {
-			int[] cur = queue.poll();
-			int cx = cur[0];
-			int cy = cur[1];
-//			System.out.println(cx+" "+cy);
-			unionSum += arr[cy][cx];
-			unionSize++;
-			allPos.add(new int[] { cx, cy });
-
-			for (int i = 0; i < 4; i++) {
-				int nx = cx + dx[i];
-				int ny = cy + dy[i];
-				if (nx < 0 || N <= nx || ny < 0 || N <= ny || visited[ny][nx])
-					continue;
-				if (check(arr[cy][cx], arr[ny][nx])) {
-					queue.add(new int[] { nx, ny });
-					visited[ny][nx] = true;
+			adjList = new ArrayList<>();
+			for (int i = 0; i < N; i++)
+				adjList.add(new ArrayList<Integer>());
+			for (int[] edge : edges) {
+				int a = edge[0];
+				int b = edge[1];
+				adjList.get(a).add(b);
+			}
+			int[] dp = new int[N];
+			dp[N - 1] = 1;
+			for (int i = N - 1; i >= 0; i--) {
+				for (int j : adjList.get(i)) {
+					dp[i] = Math.max(dp[i], dp[j] + 1);
 				}
 			}
+			answer = 0;
+			for (int i = 0; i < N; i++)
+				answer = Math.max(dp[i], answer);
+			System.out.println(answer);
 		}
-
-		int unionAvg = unionSum / unionSize;
-		for (int[] cur : allPos) {
-			int x = cur[0];
-			int y = cur[1];
-			arr[y][x] = unionAvg;
-		}
-		return allPos.size() >= 2;
-
 	}
 
-	static boolean check(int a, int b) {
-		int diff = Math.abs(a - b);
-		return L <= diff && diff <= R;
-	}
 }
