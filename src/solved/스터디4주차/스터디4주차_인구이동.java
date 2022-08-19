@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
-public class 인구이동 {
+public class 스터디4주차_인구이동 {
 	static int N, L, R;
 	static int[] dx = { 0, 1, 0, -1 };
 	static int[] dy = { -1, 0, 1, 0 };
