@@ -1,10 +1,11 @@
+package solved.삼성SW역량테스트기출;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
+public class 마법사상어와블리자드 {
 	static int N;
 	static int[][] matrix;
 //	static LinkedList<Integer> marble;
