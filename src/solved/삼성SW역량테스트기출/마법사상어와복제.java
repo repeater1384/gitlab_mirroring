@@ -1,9 +1,10 @@
+package solved.삼성SW역량테스트기출;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
-public class Main {
+public class 마법사상어와복제 {
 	static int N = 4;
 	static Queue<Integer>[][] fish;
 	static Queue<Integer>[][] practice;
