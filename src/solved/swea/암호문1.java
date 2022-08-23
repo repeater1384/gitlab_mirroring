@@ -1,7 +1,7 @@
 package solved.swea;
 import java.util.*;
 
-class swea_암호문1 {
+class 암호문1 {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		for (int tc = 1; tc <= 10; tc++) {

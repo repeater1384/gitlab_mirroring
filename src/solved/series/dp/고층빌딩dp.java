@@ -1,4 +1,4 @@
-package solved.dp;
+package solved.series.dp;
 import java.util.Scanner;
 
 public class 고층빌딩dp {

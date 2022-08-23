@@ -1,4 +1,4 @@
-package solved.배열돌리기;
+package solved.series.배열돌리기;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
