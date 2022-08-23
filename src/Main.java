@@ -1,92 +1,195 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.Scanner;
+
+class BlockGroup implements Comparable<BlockGroup> {
+	int cnt, rainbowCnt, mainR, mainC;
+
+	public BlockGroup(int cnt, int rainbowCnt, int mainR, int mainC) {
+		super();
+		this.cnt = cnt;
+		this.rainbowCnt = rainbowCnt;
+		this.mainR = mainR;
+		this.mainC = mainC;
+	}
+
+	@Override
+	public int compareTo(BlockGroup o) {
+		if (o.cnt == this.cnt && this.rainbowCnt == o.rainbowCnt && o.mainR == this.mainR)
+			return o.mainC - this.mainC;
+		if (this.cnt == o.cnt && this.rainbowCnt == o.rainbowCnt)
+			return o.mainR - this.mainR;
+		if (o.cnt == this.cnt)
+			return o.rainbowCnt - this.rainbowCnt;
+		return o.cnt - this.cnt;
+	}
+
+	@Override
+	public String toString() {
+		return "BlockGroup [cnt=" + cnt + ", rainbowCnt=" + rainbowCnt + ", mainR=" + mainR + ", mainC=" + mainC + "]";
+	}
+
+}
 
 public class Main {
-	static int R, C;
-	static int cheeseSize;
-	static int[] dr = { -1, 1, 0, 0 };
-	static int[] dc = { 0, 0, -1, 1 };
+	static int N;
+	static int M;
 	static int[][] arr;
 	static boolean[][] visited;
+	static int[] dx = { 1, 0, -1, 0 };
+	static int[] dy = { 0, 1, 0, -1 };
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		R = Integer.parseInt(st.nextToken());
-		C = Integer.parseInt(st.nextToken());
-		arr = new int[R][C];
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		N = sc.nextInt();
+		M = sc.nextInt();
+		arr = new int[N][N];
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				arr[i][j] = sc.nextInt();
 
-		cheeseSize = 0;
-		for (int i = 0; i < R; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < C; j++) {
-				arr[i][j] = Integer.parseInt(st.nextToken());
-				if (arr[i][j] == 1)
-					cheeseSize++;
+		int answer = 0;
+		while (true) {
+			visited = new boolean[N][N];
+			List<BlockGroup> blockGroupList = new ArrayList<>();
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (arr[i][j] > 0 && !visited[i][j]) {
+						BlockGroup b = bfs(j, i, false);
+						if (b.cnt >= 2)
+							blockGroupList.add(b);
+					}
+				}
 			}
+
+			if (blockGroupList.size() == 0)
+				break;
+
+			Collections.sort(blockGroupList);
+			
+			
+//			for (BlockGroup blockGroup : blockGroupList) 
+//				System.out.println(blockGroup);
+			
+			BlockGroup deleteBlockGroup = blockGroupList.get(0);
+			int dy = deleteBlockGroup.mainR;
+			int dx = deleteBlockGroup.mainC;
+			bfs(dx, dy, true);
+			answer += deleteBlockGroup.cnt * deleteBlockGroup.cnt;
+//			printArr();
+			gravity();
+//			printArr();
+			rotate();
+//			printArr();
+			gravity();
+//			printArr();
+//			System.out.println("-----------------------------------"+answer);
 		}
 
-		int lastCheeseSize = cheeseSize;
-		int round = 0;
-		while (cheeseSize != 0) {
-			round++;
-			lastCheeseSize = cheeseSize;
+//		for (BlockGroup blockGroup : blockGroupList) {
+//			System.out.println(blockGroup);
+//		}
+		System.out.println(answer);
 
-			visited = new boolean[R][C];
-			bfs();
-			for (int i = 0; i < R; i++) {
-				for (int j = 0; j < C; j++) {
-					if (arr[i][j] == 2) {
-						cheeseSize--;
-						arr[i][j] = 0;
+		sc.close();
+	}
+
+	static BlockGroup bfs(int sx, int sy, boolean option) {
+
+		Queue<int[]> queue = new LinkedList<>();
+		Queue<int[]> zeroQueue = new LinkedList<>();
+		if (option)
+			visited = new boolean[N][N];
+		visited[sy][sx] = true;
+		queue.add(new int[] { sx, sy });
+		
+		int mainNum = arr[sy][sx];
+		int groupSize = 0;
+		int rainbowCnt = 0;
+		while (!queue.isEmpty()) {
+			groupSize++;
+			int[] cur = queue.poll();
+			int cx = cur[0];
+			int cy = cur[1];
+			if (arr[cy][cx] == 0) {
+				rainbowCnt++;
+				zeroQueue.add(cur);
+			}
+			if (option)
+				arr[cy][cx] = -2;
+			for (int i = 0; i < 4; i++) {
+				int nx = cx + dx[i];
+				int ny = cy + dy[i];
+				if (0 <= ny && ny < N && 0 <= nx && nx < N && !visited[ny][nx]) {
+					if (arr[ny][nx] == mainNum || arr[ny][nx] == 0) {
+						queue.add(new int[] { nx, ny });
+						visited[ny][nx] = true;
 					}
 				}
 			}
 		}
-		System.out.println(round);
-		System.out.println(lastCheeseSize);
+		while(!zeroQueue.isEmpty()) {
+			int[] cur = zeroQueue.poll();
+			int cx = cur[0];
+			int cy = cur[1];
+			visited[cy][cx]=false;
+		}
+		return new BlockGroup(groupSize, rainbowCnt, sy, sx);
 	}
 
-	static class Node {
-		int row;
-		int col;
+	static void gravity() {
+		int[][] gravityArr = new int[N][N];
+		for (int i = 0; i < N; i++)
+			Arrays.fill(gravityArr[i], -2);
+		for (int j = 0; j < N; j++) {
 
-		public Node(int row, int col) {
-			this.row = row;
-			this.col = col;
-		}
+			int temp = N - 1;
+			Queue<Integer> queue = new LinkedList<>();
+			for (int i = N - 1; i >= 0; i--) {
+				if (arr[i][j] >= 0) {
+					queue.add(arr[i][j]);
+					continue;
+				}
 
-		public void meltCheese() {
-			for (int i = 0; i < 4; i++) {
-				int nextRow = this.row + dr[i];
-				int nextCol = this.col + dc[i];
-				if (nextRow < R && nextCol < C && nextRow >= 0 && nextCol >= 0 && arr[nextRow][nextCol] == 1)
-					arr[nextRow][nextCol] = 2;
-			}
-		}
-	}
-
-	static void bfs() {
-		Queue<Node> queue = new LinkedList<>();
-		visited[0][0] = true;
-		queue.offer(new Node(0, 0));
-		while (!queue.isEmpty()) {
-			Node air = queue.poll();
-			int cR = air.row;
-			int cC = air.col;
-			air.meltCheese();
-			for (int i = 0; i < 4; i++) {
-				int nR = cR + dr[i];
-				int nC = cC + dc[i];
-				if (nR < R && nC < C && nR >= 0 && nC >= 0 && !visited[nR][nC] && arr[nR][nC] == 0) {
-					visited[nR][nC] = true;
-					queue.offer(new Node(nR, nC));
+				if (arr[i][j] == -1) {
+					while (!queue.isEmpty()) {
+						int cur = queue.poll();
+						gravityArr[temp--][j] = cur;
+					}
+					gravityArr[i][j] = -1;
+					temp = i - 1;
 				}
 			}
+			while (!queue.isEmpty()) {
+				int cur = queue.poll();
+				gravityArr[temp--][j] = cur;
+			}
 		}
+		arr = gravityArr;
+	}
+
+	static void rotate() {
+
+		int[][] temp = new int[N][N];
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				temp[i][j] = arr[j][N - 1 - i];
+		arr = temp;
+	}
+	
+	static void printArr() {
+		for(int i = 0 ;i<N;i++) {
+			for(int j = 0 ;j<N;j++) {
+				if(arr[i][j]>=0)System.out.print(arr[i][j]);
+				if(arr[i][j]==-1)System.out.print('B');
+				if(arr[i][j]==-2)System.out.print('X');
+			}
+			System.out.println();
+		}
+		System.out.println("***");
 	}
 }
