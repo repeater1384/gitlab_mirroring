@@ -1,3 +1,4 @@
+package _templet;
 //import java.util.Scanner;
 //
 //class Solution {

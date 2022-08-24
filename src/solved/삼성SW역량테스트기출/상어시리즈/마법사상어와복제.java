@@ -1,4 +1,4 @@
-package solved.삼성SW역량테스트기출;
+package solved.삼성SW역량테스트기출.상어시리즈;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;

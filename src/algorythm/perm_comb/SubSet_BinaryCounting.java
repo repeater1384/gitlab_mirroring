@@ -1,4 +1,4 @@
-package algorythm;
+package algorythm.perm_comb;
 
 public class SubSet_BinaryCounting {
 

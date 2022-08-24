@@ -1,51 +1,66 @@
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Scanner;
-import java.util.Set;
 
 class Solution {
-	static int answer;
-	static int[] parents;
+	static int N;
+	static int[] arr;
+	static int[] sortedArr;
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		int T = sc.nextInt();
 		for (int tc = 1; tc <= T; tc++) {
-			int N = sc.nextInt();
-			parents = new int[N + 1];
-			for (int i = 1; i <= N; i++)
-				parents[i] = i;
-			int M = sc.nextInt();
-			while (M-- > 0) {
-				int a = sc.nextInt();
-				int b = sc.nextInt();
-				if (!isSameParents(a, b))
-					union(a, b);
-			}
-			Set<Integer> count = new HashSet<>();
-			for (int i = 1; i <= N; i++)
-				count.add(find_parents(i));
-
-			System.out.printf("#%d %d\n", tc, count.size());
+			N = sc.nextInt();
+			arr = new int[N];
+			for (int i = 0; i < N; i++)
+				arr[i] = sc.nextInt();
+			sortedArr = arr.clone();
+			Arrays.sort(sortedArr);
+			int answer = 0;
+//			dfs(0, new int[5]);
+			System.out.printf("#%d %d\n", tc, answer);
 		}
 		sc.close();
 	}
 
-	static int find_parents(int x) {
-		if (x == parents[x])
-			return x;
-		return parents[x] = find_parents(parents[x]);
+	static void dfs(int depth, int[] result) {
+		if (depth == Math.min(5, N)) {
+			int[] final_result = shuffleDeck(result);
+			for(int i = 0 ;i<N;i++) {
+				if(final_result[i]!=sortedArr[i])return;
+			}
+			
+			
+		}
+
+		for (int i = 0; i < N; i++) {
+			result[depth] = i;
+			dfs(depth + 1, result);
+		}
 	}
 
-	static boolean isSameParents(int x, int y) {
-		return find_parents(x) == find_parents(y);
+	static int[] shuffleDeck(int[] result) {
+		int[] temp = arr.clone();
+		for (int shuffleNum : result) {
+			temp = shuffle(shuffleNum);
+		}
+		return temp;
+
 	}
 
-	static void union(int x, int y) {
-		x = parents[x];
-		y = parents[y];
-		if (x > y)
-			parents[x] = y;
-		else
-			parents[y] = x;
+	static int[] shuffle(int shuffleNum) {
+		int[] shuffled = arr.clone();
+		int half = N / 2;
+		for (int i = 1; i <= shuffleNum; i++) {
+			int cnt = half - Math.abs(half - i);
+			int c = half - cnt;
+			while (cnt-- > 0) {
+				int temp = shuffled[c];
+				shuffled[c] = shuffled[c + 1];
+				shuffled[c + 1] = temp;
+				c += 2;
+			}
+		}
+		return shuffled;
 	}
 }
