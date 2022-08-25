@@ -1,91 +1,86 @@
 package solved.코드배틀;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
-// 헌터
+import java.util.Scanner;
 
 class Solution {
-	static int[][] matrix;
 	static int N;
-	static int CNT;
-	static int[][] monster;
-	static int[][] client;
-	static int answer;
+	static int[] arr;
+	static int[][] matrix;
+	static List<Integer> order1;
+	static List<Integer> order2;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = null;
-		int T = Integer.parseInt(br.readLine());
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int T = sc.nextInt();
 		for (int tc = 1; tc <= T; tc++) {
-			N = Integer.parseInt(br.readLine());
-			matrix = new int[N][N];
-			CNT = 0;
-			for (int i = 0; i < N; i++) {
-				st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < N; j++) {
-					matrix[i][j] = Integer.parseInt(st.nextToken());
-					CNT = Math.max(CNT, matrix[i][j]);
-				}
+			N = sc.nextInt();
+			arr = new int[N];
+			matrix = new int[3][2];
+			for (int i = 0; i < 3; i++) {
+				matrix[i][0] = sc.nextInt() - 1;
+				matrix[i][1] = sc.nextInt();
 			}
-			monster = new int[CNT + 1][2];
-			client = new int[CNT + 1][2];
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < N; j++) {
-					int cur = matrix[i][j];
-					if (cur > 0)
-						monster[cur] = new int[] { i, j };
-					if (cur < 0)
-						client[-1 * cur] = new int[] { i, j };
-				}
-			}
-//			System.out.println(Arrays.deepToString(monster));
-//			System.out.println(Arrays.deepToString(client));
+			order1 = new ArrayList<>();
+			order2 = new ArrayList<>();
+			order1.add(0);
+			order2.add(0);
 
-			answer = Integer.MAX_VALUE;
-			dfs(new int[CNT * 2], new boolean[CNT * 2], 0);
+			for (int i = 1; i <= N; i++) {
+				order1.add(i);
+				order1.add(-1 * i);
+				order2.add(-1 * i);
+				order2.add(i);
+			}
+
+			List<int[]> seat = new ArrayList<>();
+			seat.add(new int[] { 1, 2, 3 });
+			seat.add(new int[] { 1, 3, 2 });
+			seat.add(new int[] { 2, 1, 3 });
+			seat.add(new int[] { 2, 3, 1 });
+			seat.add(new int[] { 3, 1, 2 });
+			seat.add(new int[] { 3, 2, 1 });
+			List<int[]> order = new ArrayList<>();
+			order.add(new int[] { 0, 0, 0 });
+			order.add(new int[] { 0, 0, 1 });
+			order.add(new int[] { 0, 1, 0 });
+			order.add(new int[] { 0, 1, 1 });
+			order.add(new int[] { 1, 0, 0 });
+			order.add(new int[] { 1, 0, 1 });
+			order.add(new int[] { 1, 1, 0 });
+			order.add(new int[] { 1, 1, 1 });
+
+			int answer = Integer.MAX_VALUE;
+			for (int i = 0; i < 6; i++) {
+				for (int j = 0; j < 8; j++) {
+					answer = Math.min(answer, calc(seat.get(i), order.get(j)));
+				}
+			}
 			System.out.printf("#%d %d\n", tc, answer);
 		}
 	}
 
-	static void dfs(int[] result, boolean[] visited, int depth) {
-		if (depth == CNT * 2) {
-			int cur = 0;
-			int sx = 0;
-			int sy = 0;
-//			System.out.println(Arrays.toString(result));
-//			for (int num : result) {
-//				System.out.print((num >= CNT ? -1 * (num - CNT) : num) + " ");
-//			}
-//			System.out.println();
-			for (int num : result) {
-				if (num <= CNT) {
-					cur += getDis(sx, sy, monster[num][1], monster[num][0]);
-					sy = monster[num][0];
-					sx = monster[num][1];
-				} else {
-					cur += getDis(client[num - CNT][1], client[num - CNT][0], sx, sy);
-					sy = client[num - CNT][0];
-					sx = client[num - CNT][1];
+	static int calc(int[] seat, int[] order) {
+		int[] temp = new int[N];
+		int result = 0;
+		for (int idx = 0; idx < 3; idx++) {
+			int s = seat[idx] - 1;
+			int o = order[idx];
+			List<Integer> curOrder = o == 1 ? order1 : order2;
+			int first = matrix[s][0];
+			int people = matrix[s][1];
+			for (int d : curOrder) {
+				if (0 <= first + d && first + d < N && temp[first + d] == 0) {
+					temp[first + d] = 1;
+					result += Math.abs(d) + 1;
+					people--;
+					if (people == 0)
+						break;
 				}
 			}
-			answer = Math.min(answer, cur);
-			return;
 		}
-		for (int i = 1; i <= CNT * 2; i++) {
-			if ((i <= CNT && !visited[i - 1]) || (i > CNT && visited[i - 1 - CNT] && !visited[i - 1])) {
-				visited[i - 1] = true;
-				result[depth] = i;
-				dfs(result, visited, depth + 1);
-				visited[i - 1] = false;
-			}
-		}
-	}
 
-	static int getDis(int x1, int y1, int x2, int y2) {
-		return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+		return result;
 	}
 }

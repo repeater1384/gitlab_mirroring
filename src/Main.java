@@ -1,109 +1,215 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
-class Fish implements Comparable<Fish> {
-	int x, y, distance;
+class Point {
+	int y, x;
 
-	public Fish(int x, int y, int distance) {
-		super();
-		this.x = x;
+	public Point(int y, int x) {
 		this.y = y;
-		this.distance = distance;
-	}
-
-	@Override
-	public int compareTo(Fish o) {
-		if (this.distance == o.distance && this.y == o.y)
-			return this.x - o.x;
-		if (this.distance == o.distance)
-			return this.y - o.y;
-		return this.distance - o.distance;
+		this.x = x;
 	}
 
 	@Override
 	public String toString() {
-		return "Fish [x=" + x + ", y=" + y + ", distance=" + distance + "]";
+		return "Point [y=" + y + ", x=" + x + "]";
 	}
 
 }
 
 public class Main {
-	static int N;
-	static int[][] arr;
-	static int sharkX, sharkY, sharkSize = 2;
+	static int N, M, K;
+	static int[][] matrix;
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		N = sc.nextInt();
-		arr = new int[N][N];
+		M = sc.nextInt();
+		K = sc.nextInt();
+
+		LinkedList<Point>[] teamRail = new LinkedList[M];
+		boolean[] reverseTeam = new boolean[M];
+
+		for (int i = 0; i < M; i++)
+			teamRail[i] = new LinkedList<>();
+
+		matrix = new int[N][N];
 		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+				matrix[i][j] = sc.nextInt();
+
+		int[] dx = { 1, 0, -1, 0 };
+		int[] dy = { 0, 1, 0, -1 };
+
+		// team 정보 받아오기.
+		boolean[][] visited = new boolean[N][N];
+
+		int teamIdx = 0;
+		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				arr[i][j] = sc.nextInt();
-				if (arr[i][j] == 9) {
-					sharkX = j;
-					sharkY = i;
-					arr[i][j] = 0;
+				if (!visited[i][j] && matrix[i][j] == 1) {
+					// 새로운 팀 발견
+					Queue<Point> queue = new LinkedList<>();
+					queue.add(new Point(i, j));
+					visited[i][j] = true;
+
+					while (!queue.isEmpty()) {
+						Point cur = queue.poll();
+						int cy = cur.y;
+						int cx = cur.x;
+						int cNum = matrix[cy][cx];
+						teamRail[teamIdx].add(cur);
+						matrix[cy][cx] = 9;
+						for (int k = 0; k < 4; k++) {
+							int ny = cy + dy[k];
+							int nx = cx + dx[k];
+							if (0 <= nx && nx < N && 0 <= ny && ny < N && !visited[ny][nx]) {
+								if (cNum == 1 && matrix[ny][nx] == 3)
+									continue;
+								if (matrix[ny][nx] == 2 || matrix[ny][nx] == 3) {
+									queue.add(new Point(ny, nx));
+									visited[ny][nx] = true;
+								}
+							}
+						}
+					}
+
+					teamIdx++;
+				}
+
+			}
+		}
+		int answer = 0;
+		for (int round = 0; round < K; round++) {
+//			System.out.println(teamRail[0]+" "+answer+" "+reverseTeam[0]);
+//			printArr();
+			// 1. 머리쪽으로 한칸 가기.
+			for (int t = 0; t < M; t++) {
+				Point head;
+				if (!reverseTeam[t]) {
+					head = teamRail[t].get(0);
+				} else {
+					head = teamRail[t].get(teamRail[t].size() - 1);
+				}
+
+				Point newHead = null;
+				for (int k = 0; k < 4; k++) {
+					int ny = head.y + dy[k];
+					int nx = head.x + dx[k];
+					if (0 <= nx && nx < N && 0 <= ny && ny < N && matrix[ny][nx] == 4) {
+						matrix[ny][nx] = 9;
+						newHead = new Point(ny, nx);
+						break;
+					}
+				}
+
+				// 빈 공간이 없는 팀이면.
+				if (newHead == null) {
+					if (!reverseTeam[t]) {
+						teamRail[t].add(teamRail[t].poll());
+					} else {
+						teamRail[t].addFirst(teamRail[t].pollLast());
+					}
+				} else {
+					if (!reverseTeam[t]) {
+						teamRail[t].addFirst(newHead);
+						Point remove = teamRail[t].pollLast();
+						matrix[remove.y][remove.x] = 4;
+					} else {
+						teamRail[t].add(newHead);
+						Point remove = teamRail[t].poll();
+						matrix[remove.y][remove.x] = 4;
+					}
+				}
+			}
+			// 2. 공던지기
+			int curRound = round % (N * 4);
+			int crashY = -1, crashX = -1;
+
+			if (curRound / N == 0) {
+				int i = curRound % N;
+				for (int j = 0; j < N; j++) {
+					if (matrix[i][j] == 9) {
+						crashY = i;
+						crashX = j;
+						break;
+					}
 				}
 			}
 
-		int answer = 0;
-		int needEatFish = sharkSize;
+			if (curRound / N == 1) {
+				int j = curRound % N;
+				for (int i = N - 1; i >= 0; i--) {
+					if (matrix[i][j] == 9) {
+						crashY = i;
+						crashX = j;
+						break;
+					}
+				}
+			}
 
-		while (true) {
-			Fish fish = findNearFish();
-			if (fish == null)
-				break;
+			if (curRound / N == 2) {
+				int i = N - 1 - (curRound % N);
+				for (int j = N - 1; j >= 0; j--) {
+					if (matrix[i][j] == 9) {
+						crashY = i;
+						crashX = j;
+						break;
+					}
+				}
+			}
 
-			sharkX = fish.x;
-			sharkY = fish.y;
-			answer += fish.distance;
+			if (curRound / N == 3) {
+				int j = N - 1 - (curRound % N);
+				for (int i = 0; i < N; i++) {
+					if (matrix[i][j] == 9) {
+						crashY = i;
+						crashX = j;
+						break;
+					}
+				}
+			}
 
-			arr[fish.y][fish.x] = 0;
-			needEatFish--;
-			if (needEatFish == 0) {
-				sharkSize++;
-				needEatFish = sharkSize;
+			// 충돌한 사람이 있으면.
+			if (crashY != -1 && crashX != -1) {
+				outer: for (int t = 0; t < M; t++) {
+					if (!reverseTeam[t]) {
+						for (int idx = 0; idx < teamRail[t].size(); idx++) {
+							Point p = teamRail[t].get(idx);
+							if (crashY == p.y && crashX == p.x) {
+								answer += (idx + 1) * (idx + 1);
+								reverseTeam[t] = true;
+								break outer;
+							}
+						}
+					} else {
+						int size = teamRail[t].size();
+						for (int idx = 0; idx < teamRail[t].size(); idx++) {
+							Point p = teamRail[t].get(size - 1 - idx);
+							if (crashY == p.y && crashX == p.x) {
+								answer += (idx + 1) * (idx + 1);
+								reverseTeam[t] = false;
+								break outer;
+							}
+						}
+					}
+				}
 			}
 
 		}
 		System.out.println(answer);
+		for (int i = 0; i < M; i++) {
+			System.out.println(teamRail[i]);
+		}
+
 		sc.close();
 	}
 
-	static Fish findNearFish() {
-		int[] dx = { 1, 0, -1, 0 };
-		int[] dy = { 0, 1, 0, -1 };
-		boolean[][] visited = new boolean[N][N];
-
-		Queue<int[]> queue = new LinkedList<>();
-		List<Fish> canEatFish = new ArrayList<>();
-
-		queue.add(new int[] { sharkX, sharkY, 0 });
-		visited[sharkY][sharkX] = true;
-
-		while (!queue.isEmpty()) {
-			int[] cur = queue.poll();
-			int cx = cur[0];
-			int cy = cur[1];
-			int dis = cur[2];
-			if (0 < arr[cy][cx] && arr[cy][cx] < sharkSize) {
-				canEatFish.add(new Fish(cx, cy, dis));
-			}
-			for (int i = 0; i < 4; i++) {
-				int nx = cx + dx[i];
-				int ny = cy + dy[i];
-				if (0 <= nx && nx < N && 0 <= ny && ny < N && !visited[ny][nx] && arr[ny][nx] <= sharkSize) {
-					queue.add(new int[] { nx, ny, dis + 1 });
-					visited[ny][nx] = true;
-				}
-			}
+	static void printArr() {
+		for (int[] is : matrix) {
+			System.out.println(Arrays.toString(is));
 		}
-		Collections.sort(canEatFish);
-		return canEatFish.size() == 0 ? null : canEatFish.get(0);
+		System.out.println();
 	}
 }

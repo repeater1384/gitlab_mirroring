@@ -2,16 +2,18 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
 
 public class temp {
 
 	public static void main(String[] args) throws IOException {
+		Random r = new Random();
 		File file = new File("input.txt");
 		BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-		bw.write("1\n");
-		bw.write("100000 99999\n");
-		for (int j = 2; j <= 100000; j++)
-			bw.write(String.format("%d %d %d\n", 1, j, 1000));
+		bw.write("100 100 10000\n");
+		for(int i = 1 ;i<101;i++)
+			for(int j = 1 ;j<101;j++)
+				bw.write(String.format("%d %d %d %d %d\n", i,j,1000,Math.abs(r.nextInt())%4+1,i*100+j));
 
 		bw.close();
 //		Random r = new Random();
