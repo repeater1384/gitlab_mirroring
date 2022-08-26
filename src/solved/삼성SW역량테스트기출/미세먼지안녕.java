@@ -1,4 +1,5 @@
 package solved.삼성SW역량테스트기출;
+
 import java.util.Scanner;
 
 public class 미세먼지안녕 {

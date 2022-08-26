@@ -42,8 +42,6 @@ class Solution2 {
 						client[-1 * cur] = new int[] { i, j };
 				}
 			}
-//			System.out.println(Arrays.deepToString(monster));
-//			System.out.println(Arrays.deepToString(client));
 
 			answer = Integer.MAX_VALUE;
 			dfs(new int[CNT * 2], new boolean[CNT * 2], 0);
@@ -56,11 +54,7 @@ class Solution2 {
 			int cur = 0;
 			int sx = 0;
 			int sy = 0;
-//			System.out.println(Arrays.toString(result));
-//			for (int num : result) {
-//				System.out.print((num >= CNT ? -1 * (num - CNT) : num) + " ");
-//			}
-//			System.out.println();
+			
 			for (int num : result) {
 				if (num <= CNT) {
 					cur += getDis(sx, sy, monster[num][1], monster[num][0]);
@@ -72,8 +66,10 @@ class Solution2 {
 					sx = client[num - CNT][1];
 				}
 			}
+			
 			answer = Math.min(answer, cur);
 			return;
+			
 		}
 		for (int i = 1; i <= CNT * 2; i++) {
 			if ((i <= CNT && !visited[i - 1]) || (i > CNT && visited[i - 1 - CNT] && !visited[i - 1])) {
