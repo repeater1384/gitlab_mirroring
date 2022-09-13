@@ -16,6 +16,9 @@ class UserSolution {
 		list = new LinkedList<>();
 		freq = new int[26];
 		idxList = new ArrayList[26];
+		for (int i = 0; i < 26; i++) {
+			idxList[i] = new ArrayList<>();
+		}
 		cursor = 0;
 		this.H = H;
 		this.W = W;
@@ -27,18 +30,30 @@ class UserSolution {
 			freq[c - 'a']++;
 			idxList[c - 'a'].add(i);
 		}
-
+//		for (int i = 0; i < 26; i++) {
+//			System.out.println(((char) (i + 'a')) + " " + idxList[i]);
+//		}
+//		System.out.println("--------------");
 	}
 
 	void insert(char mChar) {
 		list.add(cursor++, mChar);
 		freq[mChar - 'a']++;
 		for (int alpha = 0; alpha < 26; alpha++) {
-			int startIdx = lowerBound(alpha, cursor);
-			for(int idx = startIdx; idx<idxList[alpha].size();idx++) {
-				idxList[alpha].
+			List<Integer> temp = new ArrayList<>();
+			List<Integer> cur = idxList[alpha];
+			for (int i = 0; i < cur.size(); i++) {
+				if (cur.get(i) < cursor - 1)
+					temp.add(cur.get(i));
+				else
+					temp.add(cur.get(i) + 1);
 			}
+			idxList[alpha] = temp;
 		}
+		idxList[mChar - 'a'].add(lowerBound(mChar - 'a', cursor - 1), cursor - 1);
+//		for (int i = 0; i < 26; i++) {
+//			System.out.println(((char) (i + 'a')) + " " + idxList[i]);
+//		}
 	}
 
 	char moveCursor(int mRow, int mCol) {
@@ -51,12 +66,8 @@ class UserSolution {
 	}
 
 	int countCharacter(char mChar) {
-		int cnt = freq[mChar - 'a'];
-		for (int i = 0; i < cursor; i++) {
-			if (list.get(i) == mChar)
-				cnt--;
-		}
-		return cnt;
+		return idxList[mChar - 'a'].size() - lowerBound(mChar - 'a', cursor);
+
 	}
 
 	int lowerBound(int alpha, int key) {

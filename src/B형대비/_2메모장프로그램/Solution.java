@@ -36,7 +36,7 @@ class Solution
 			st = new StringTokenizer(br.readLine(), " ");
 			
 			int cmd = Integer.parseInt(st.nextToken());
-			System.out.println(q+" "+cmd+" "+queryCnt);
+//			System.out.println(q+" "+cmd+" "+queryCnt);
 			if (cmd == CMD_INIT)
 			{
 				int H = Integer.parseInt(st.nextToken());
