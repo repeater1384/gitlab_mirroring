@@ -30,7 +30,7 @@ public class boundPrac {
 		return end;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(lowerBound());
-	}
+//	public static void main(String[] args) {
+//		System.out.println(lowerBound());
+//	}
 }

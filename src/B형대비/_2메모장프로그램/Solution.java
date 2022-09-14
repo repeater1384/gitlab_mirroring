@@ -34,7 +34,6 @@ class Solution
 		for (int q = 0; q < queryCnt; q++)
 		{
 			st = new StringTokenizer(br.readLine(), " ");
-			
 			int cmd = Integer.parseInt(st.nextToken());
 //			System.out.println(q+" "+cmd+" "+queryCnt);
 			if (cmd == CMD_INIT)
@@ -88,9 +87,13 @@ class Solution
 		
 		//System.setIn(new java.io.FileInputStream("res/sample_input.txt"));
 		
+		long beforeTime = System.currentTimeMillis(); //코드 실행 전에 시간 받아오기
+        
+		//실험할 코드 추가
+		        
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-		
 		TC = Integer.parseInt(st.nextToken());
 		MARK = Integer.parseInt(st.nextToken());
 		
@@ -101,6 +104,12 @@ class Solution
 			System.out.println("#" + testcase + " " + score);
 		}
 		
+		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
+		System.out.println("시간차이(m) : "+secDiffTime);
+		Runtime.getRuntime().gc();
+		long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+		System.out.print(usedMemory + " bytes");
 		br.close();
 	}
 }
