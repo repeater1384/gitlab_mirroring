@@ -54,9 +54,9 @@ public class UserSolution {
 	static List<Integer>[] referenceIdx;
 
 	public void initTable() {
-		Table = new Cell[ROW * COL];
-		referenceIdx = new ArrayList[ROW * COL];
-		for (int i = 0; i < ROW * COL; i++) {
+		Table = new Cell[ROW * COL + 1];
+		referenceIdx = new ArrayList[ROW * COL + 1];
+		for (int i = 0; i < ROW * COL + 1; i++) {
 			Table[i] = new Cell(null, 0, true);
 			referenceIdx[i] = new ArrayList<>();
 		}
@@ -120,20 +120,53 @@ public class UserSolution {
 //				System.out.println(referenceIdx[info.val]);
 //				System.out.println(referenceIdx[idx]);
 //			}
-			if(referenceIdx[info.val].contains(idx) && referenceIdx[idx].contains(info.val)) {
-				canCalc = false;
-				Table[info.val].canCalc=false;
-			}
 			if (Table[info.val].canCalc == false || info.val == idx) {
-				
 				canCalc = false;
 				break;
 			}
-		}
 
+		}
+		Queue<Integer> temp2 = new LinkedList<>();
+		boolean[] visit = new boolean[ROW * COL];
+		for (int n : referenceIdx[idx]) {
+			temp2.add(n);
+			visit[n] = true;
+		}
+//		System.out.println(temp);
+		while (!temp2.isEmpty()) {
+			int cur = temp2.poll();
+			if (cur == idx) {
+				canCalc = false;
+				break;
+			}
+			for (int next : referenceIdx[cur]) {
+				if (!visit[next]) {
+					temp2.add(next);
+					visit[next] = true;
+				}
+			}
+		}
 		// 내꺼 업데이트.
 		Table[idx].canCalc = canCalc;
 		Table[idx].hasCell = hasCell;
+		if (!canCalc) {
+			Queue<Integer> temp = new LinkedList<>();
+			for (int next : referenceIdx[idx]) {
+				if (Table[next].canCalc) {
+					Table[next].canCalc = false;
+					temp.add(next);
+				}
+			}
+			while (!temp.isEmpty()) {
+				int cur = temp.poll();
+				for (int next : referenceIdx[cur]) {
+					if (Table[next].canCalc) {
+						Table[next].canCalc = false;
+						temp.add(next);
+					}
+				}
+			}
+		}
 		if (canCalc) {
 			int resultValue = calc(hasCell);
 			Table[idx].value = resultValue;
@@ -266,15 +299,13 @@ public class UserSolution {
 				value[r][c] = curCell.value;
 			}
 		}
-		if (row == 2 && col == 4) {
-			
-			System.out.println(Table[convertPos1(row, col)].canCalc);
-			System.out.println("---------------" + row + " " + col + " " + " " + idx + " " + allCanCalc + " "
-					+ cantCalcCnt + "-------------------");
-			for (Info info : hasCell) {
-				System.out.println(Table[info.val].value+" asdf");
-			}
-		}
+
+//		System.out.println(Table[convertPos1(row, col)].canCalc);
+//		System.out.println("---------------" + row + " " + col + " " + " " + idx + " " + allCanCalc + " " + cantCalcCnt
+//				+ "-------------------");
+//		for (Info info : hasCell) {
+//			System.out.println(Table[info.val].value + " asdf");
+//		}
 		return allCanCalc;
 	}
 
