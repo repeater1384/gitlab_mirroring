@@ -65,23 +65,14 @@ class UserSolution {
 	}
 
 	int request(int tStamp, int pId, int mLine, int eId, int mTime) {
-		if(pId==33775548 && eId==18) {
-			System.out.println(mainPQ);
-			System.out.println(waitLine[91]);
-		}
 		addPQ(tStamp - 1);
 		pollPQ(tStamp - 1);
 		waitLine[mLine].add(new Request(pId, mLine, eId, mTime));
 		productStatus.put(pId, 1);
-		
+
 		pollPQ(tStamp);
 		addPQ(tStamp);
 		pollPQ(tStamp);
-		if(pId==33775548 && eId==18) {
-			System.out.println("0------------------");
-			System.out.println(mainPQ);
-			System.out.println(waitLine[91]);
-		}
 
 		return lineUsed[mLine];
 	}
@@ -102,7 +93,8 @@ class UserSolution {
 			equipUsed[cur.eId] = false;
 			productStatus.put(cur.pId, 3);
 
-			addPQ(cur.endTime);
+			if (mainPQ.isEmpty() || mainPQ.peek().endTime != cur.endTime)
+				addPQ(cur.endTime);
 		}
 	}
 
@@ -119,8 +111,8 @@ class UserSolution {
 			canAdd.add(i);
 			equipUsed[waitLine[i].peek().eId] = true;
 		}
-		
-		for(int i:canAdd) {
+
+		for (int i : canAdd) {
 			Request cur = waitLine[i].poll();
 			lineUsed[i] = cur.pId;
 			equipUsed[cur.eId] = true;
@@ -137,7 +129,7 @@ class UserSolution {
 			if (equipUsed[waitLine[i].peek().eId])
 				continue;
 			// 넣을수 있음.
-			
+
 			Request cur = waitLine[i].poll();
 			lineUsed[i] = cur.pId;
 			equipUsed[cur.eId] = true;
