@@ -7,19 +7,12 @@ import java.util.Queue;
 
 class Cell {
 	List<Info> hasCell;
-	char[] equation;
 	int value;
 	boolean canCalc;
-
-	public Cell(char[] equation) {
-		super();
-		this.equation = equation;
-	}
 
 	public Cell(char[] equation, int value, boolean canCalc) {
 		super();
 		this.hasCell = new ArrayList<>();
-		this.equation = equation;
 		this.value = value;
 		this.canCalc = canCalc;
 	}
@@ -37,12 +30,6 @@ class Info {
 		this.isPositive = isPositive;
 		this.val = val;
 	}
-
-	@Override
-	public String toString() {
-		return "Info [isCell=" + isCell + ", isPositive=" + isPositive + ", val=" + val + "]";
-	}
-
 }
 
 public class UserSolution {
@@ -71,6 +58,7 @@ public class UserSolution {
 				}
 			}
 		}
+
 		List<Info> hasCell = new ArrayList<>();
 		boolean isPostive = true;
 		for (int i = 0; i < equation.length; i++) {
@@ -114,25 +102,18 @@ public class UserSolution {
 		for (Info info : hasCell) {
 			if (info.isCell == false)
 				continue;
-//			if (row == 1 && col == 2) {
-//				System.out.println(info.val+"asdf "+idx);
-//				System.out.println(Table[info.val].canCalc);
-//				System.out.println(referenceIdx[info.val]);
-//				System.out.println(referenceIdx[idx]);
-//			}
 			if (Table[info.val].canCalc == false || info.val == idx) {
 				canCalc = false;
 				break;
 			}
-
 		}
+
 		Queue<Integer> temp2 = new LinkedList<>();
 		boolean[] visit = new boolean[ROW * COL];
 		for (int n : referenceIdx[idx]) {
 			temp2.add(n);
 			visit[n] = true;
 		}
-//		System.out.println(temp);
 		while (!temp2.isEmpty()) {
 			int cur = temp2.poll();
 			if (cur == idx) {
@@ -146,9 +127,12 @@ public class UserSolution {
 				}
 			}
 		}
+
 		// 내꺼 업데이트.
 		Table[idx].canCalc = canCalc;
 		Table[idx].hasCell = hasCell;
+
+		// 내꺼 계산 못할때 나를 참조하는 애들 false로 바꾸기.
 		if (!canCalc) {
 			Queue<Integer> temp = new LinkedList<>();
 			for (int next : referenceIdx[idx]) {
@@ -167,16 +151,15 @@ public class UserSolution {
 				}
 			}
 		}
+		// 내꺼 계산가능할떄.
 		if (canCalc) {
 			int resultValue = calc(hasCell);
 			Table[idx].value = resultValue;
 
-//			boolean[] visitedIdx = new boolean[ROW * COL];
 			int[] visitedCntIdx = new int[ROW * COL];
 			Queue<Integer> queue = new LinkedList<>();
 			for (int i : referenceIdx[idx]) {
 				queue.add(i);
-//				visitedIdx[i] = true;
 				visitedCntIdx[i]++;
 			}
 			while (!queue.isEmpty()) {
@@ -190,7 +173,7 @@ public class UserSolution {
 						continue;
 					}
 					if (Table[info.val].canCalc == false) {
-						if (visitedCntIdx[curIdx] < 3) {
+						if (visitedCntIdx[curIdx] < 2) {
 							visitedCntIdx[curIdx]++;
 							queue.add(curIdx);
 						}
@@ -204,7 +187,7 @@ public class UserSolution {
 					int curResultValue = calc(Table[curIdx].hasCell);
 					Table[curIdx].value = curResultValue;
 					for (int i : referenceIdx[curIdx]) {
-						if (visitedCntIdx[i] < 3) {
+						if (visitedCntIdx[i] < 2) {
 							queue.add(i);
 							visitedCntIdx[i]++;
 						}
@@ -212,73 +195,6 @@ public class UserSolution {
 				}
 			}
 		}
-
-		//////////////////////////////////////////////
-		// 나를 참조하고 있던거 업데이트.
-//		List<Integer> willUpdateIdx = new ArrayList<>();
-//		for (int i = 0; i < ROW * COL; i++) {
-//			Cell curCell = Table[i];
-//			if (curCell.hasCell == null)
-//				continue;
-//			for (Info info : curCell.hasCell) {
-////				System.out.println(info.val );
-//				if (info.isCell == true && info.val == idx) {
-//					willUpdateIdx.add(i);
-//					break;
-//				}
-//			}
-//		}
-//
-//		boolean[] visitedIdx = new boolean[ROW * COL];
-//		while (true) {
-//			List<Integer> nextIdx = new ArrayList<>();
-//			for (int i : willUpdateIdx) {
-//				Cell curCell = Table[i];
-//				boolean curCanCalc = true;
-//				for (Info info : curCell.hasCell) {
-//					if (info == null)
-//						continue;
-//					if (info.isCell == false) {
-//						continue;
-//					}
-//					if (Table[info.val].canCalc == false) {
-//						curCanCalc = false;
-//						if (willUpdateIdx.contains(info.val) && !visitedIdx[info.val]) {
-//							nextIdx.add(info.val);
-//							visitedIdx[info.val] = true;
-//						}
-//						break;
-//					}
-//				}
-//
-//				Table[i].canCalc = curCanCalc;
-//				if (curCanCalc) {
-//					int resultValue = calc(Table[i].hasCell);
-//					Table[i].value = resultValue;
-//
-//					for (int j = 0; j < ROW * COL; j++) {
-//						Cell curCurCell = Table[j];
-//						if (curCurCell.hasCell == null)
-//							continue;
-//						for (Info info : curCurCell.hasCell) {
-////							System.out.println(info.val );
-//							if (info.isCell == true && info.val == i) {
-//								nextIdx.add(j);
-//								break;
-//							}
-//						}
-//					}
-//
-//				}
-//			}
-//			if (row == 72 && col == 14) {
-//				System.out.println(willUpdateIdx);
-//				System.out.println(nextIdx);
-//			}
-//			if (nextIdx.size() == 0)
-//				break;
-//			willUpdateIdx = nextIdx;
-//		}
 
 		boolean allCanCalc = true;
 		int cantCalcCnt = 0;
@@ -289,6 +205,7 @@ public class UserSolution {
 				cantCalcCnt++;
 			}
 		}
+
 		for (int i = 0; i < ROW * COL; i++) {
 			Cell curCell = Table[i];
 			int r = i / COL;
@@ -300,12 +217,6 @@ public class UserSolution {
 			}
 		}
 
-//		System.out.println(Table[convertPos1(row, col)].canCalc);
-//		System.out.println("---------------" + row + " " + col + " " + " " + idx + " " + allCanCalc + " " + cantCalcCnt
-//				+ "-------------------");
-//		for (Info info : hasCell) {
-//			System.out.println(Table[info.val].value + " asdf");
-//		}
 		return allCanCalc;
 	}
 
@@ -324,11 +235,6 @@ public class UserSolution {
 		int col = pos[0] - 'A';
 		return convertPos1(row, col);
 	}
-
-//	static int calc(char[] equation) {
-//		int result = 0;
-//		
-//	}
 
 	public int calc(List<Info> hasCell) {
 		int result = 0;

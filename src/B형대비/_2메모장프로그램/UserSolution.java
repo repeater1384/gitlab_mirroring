@@ -1,59 +1,66 @@
 package B형대비._2메모장프로그램;
 
 class UserSolution {
+
 	static StringBuilder sb;
+	static int[][] freqLine;
+	static int size;
+	static int N, H, W;
 	static int cursor;
-	static int H;
-	static int W;
-	static int curSize;
-	static int[] freq;
 
 	void init(int H, int W, char mStr[]) {
-		cursor = 0;
-		curSize = 0;
 		this.H = H;
 		this.W = W;
-		freq = new int[26];
-
+		this.N = (int) Math.sqrt(H * W) + 1;
+		freqLine = new int[N][26];
 		sb = new StringBuilder();
-		for (char c : mStr) {
-			if (c == '\0')
+		size = 0;
+		cursor = 0;
+
+		for (int i = 0; i < H * W; i++) {
+			if (mStr[i] == '\0')
 				break;
-			sb.append(c);
-			freq[c - 'a']++;
-			curSize++;
+			sb.append(mStr[i]);
+			freqLine[i / N][mStr[i] - 'a']++;
+			size++;
 		}
 
 	}
 
 	void insert(char mChar) {
-		sb.insert(cursor++, mChar);
-		curSize++;
-		freq[mChar - 'a']++;
+		sb.insert(cursor, mChar);
+		int l = cursor++ / N;
+		freqLine[l][mChar - 'a']++;
+		size++;
+
+		while (l < N - 1) {
+			if ((l + 1) * N < size) {
+				char c = sb.charAt((l + 1) * N);
+				freqLine[l][c - 'a']--;
+				freqLine[l + 1][c - 'a']++;
+			}
+			l++;
+		}
 	}
 
 	char moveCursor(int mRow, int mCol) {
-		cursor = Math.min(curSize, (mRow - 1) * W + (mCol - 1));
-		char next = cursor == curSize ? '$' : sb.charAt(cursor);
+		cursor = Math.min(size, (mRow - 1) * W + (mCol - 1));
+		char next = cursor == size ? '$' : sb.charAt(cursor);
 		return next;
 	}
 
 	int countCharacter(char mChar) {
-		if (cursor < curSize / 2) {
-			int cnt = freq[mChar - 'a'];
-			for (int i = 0; i < cursor; i++) {
-				if (sb.charAt(i) == mChar) {
-					cnt--;
-				}
-			}
-			return cnt;
-		}
 		int cnt = 0;
-		char[] temp = sb.substring(cursor).toCharArray();
-		for (char c : temp) {
-			if (c == mChar)
+		int l = cursor / N;
+		for (int i = cursor; i < Math.min((l + 1) * N, size); i++) {
+			if (sb.charAt(i) == mChar)
 				cnt++;
 		}
+		l++;
+		while (l < N - 1) {
+			cnt += freqLine[l++][mChar - 'a'];
+		}
+
 		return cnt;
 	}
 }

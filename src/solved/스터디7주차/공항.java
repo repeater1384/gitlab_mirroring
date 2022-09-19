@@ -1,8 +1,9 @@
+package solved.스터디7주차;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main {
+public class 공항 {
 	static int[] parents;
 
 	public static void main(String[] args) throws IOException {
