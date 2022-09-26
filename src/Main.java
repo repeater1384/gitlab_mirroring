@@ -1,54 +1,87 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+class Edge implements Comparable<Edge> {
+	int to, weight;
+
+	public Edge(int to, int weight) {
+		super();
+		this.to = to;
+		this.weight = weight;
+	}
+
+	@Override
+	public int compareTo(Edge o) {
+		return Integer.compare(this.weight, o.weight);
+	}
+
+}
 
 public class Main {
-	static int[] parents;
+	static int N, V, K;
+	static int[][] adjMatrix;
+	static Set<Integer>[] allPath;
 
 	public static void main(String[] args) throws IOException {
+		StringTokenizer st = null;
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int N = Integer.parseInt(br.readLine());
-		parents = new int[N + 1];
-		for (int i = 0; i <= N; i++)
-			parents[i] = i;
-		int P = Integer.parseInt(br.readLine());
-		int answer = 0;
-		while (P-- > 0) {
-			int cur = Integer.parseInt(br.readLine());
-			while (true) {
-				if (find_parent(cur) == 0) {
-					System.out.println(answer);
-					System.exit(0);
-				}
-				if (find_parent(cur) == cur) {
-					union(cur, cur - 1);
-					break;
-				}
-				cur = find_parent(cur);
+
+		st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		V = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(st.nextToken());
+
+		adjMatrix = new int[N + 1][N + 1];
+		allPath = new HashSet[N + 1];
+		for (int i = 1; i <= N; i++) {
+			allPath[i] = new HashSet<Integer>();
+		}
+
+		while (V-- > 0) {
+			st = new StringTokenizer(br.readLine());
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			int cost = Integer.parseInt(st.nextToken());
+			adjMatrix[a][b] = cost;
+		}
+
+		dijkstra(1);
+		for (int i = 1; i <= N; i++) {
+			if (allPath[i].size() < K)
+				System.out.println(-1);
+			else {
+				Integer[] temp = allPath[i].toArray(new Integer[0]);
+				Arrays.sort(temp);
+				System.out.println(temp[K - 1]);
 			}
-			answer++;
 		}
-		System.out.println(answer);
+
 	}
 
-	public static int find_parent(int x) {
-		if (parents[x] == x)
-			return x;
-		return parents[x] = find_parent(parents[x]);
-	}
+	static void dijkstra(int start) {
 
-	public static boolean is_same_parent(int x, int y) {
-		return find_parent(x) == find_parent(y);
-	}
+		PriorityQueue<Edge> pq = new PriorityQueue<>();
 
-	public static void union(int x, int y) {
-		x = find_parent(x);
-		y = find_parent(y);
-		if (x > y) {
-			parents[x] = y;
-		} else {
-			parents[y] = x;
+		pq.add(new Edge(start, 0));
+
+		while (!pq.isEmpty()) {
+			Edge cur = pq.poll();
+			allPath[cur.to].add(cur.weight);
+			
+			for (int i = 1; i <= N; i++) {
+				if(adjMatrix[cur.to][i]==0)continue;
+				if(allPath[i].size()>K)continue;
+				int cost = cur.weight + adjMatrix[cur.to][i];
+				pq.add(new Edge(i, cost));
+			}
 		}
 	}
-
 }
