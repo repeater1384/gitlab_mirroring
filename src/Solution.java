@@ -1,103 +1,50 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.Scanner;
 
-class Solution {
-	static int ROUND, N, M;
-	static int[][] mainMatrix;
-	static int[][] processMatrix;
+public class Solution {
 
-	static int[] dx = { 0, 1, 0, -1 };
-	static int[] dy = { 1, 0, -1, 0 };
-	static int answer;
+	static long MOD = 1234567891;
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		int T = Integer.parseInt(br.readLine());
-
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int T = sc.nextInt();
 		for (int tc = 1; tc <= T; tc++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			ROUND = Integer.parseInt(st.nextToken());
-			M = Integer.parseInt(st.nextToken());
-			N = Integer.parseInt(st.nextToken());
-			mainMatrix = new int[N][M];
-			answer = Integer.MAX_VALUE;
-			for (int i = 0; i < N; i++) {
-				st = new StringTokenizer(br.readLine());
-				for (int j = 0; j < M; j++) {
-					mainMatrix[i][j] = Integer.parseInt(st.nextToken());
-				}
+			long N = sc.nextLong();
+			long K = sc.nextLong();
+
+			long A = factorial(N);
+			long B = factorial(K) * factorial(N - K) % MOD;
+
+			long nCk = A * fast_pow(B, MOD - 2) % MOD;
+			
+			System.out.printf("#%d %d\n", tc, nCk);
+
+		}
+		sc.close();
+	}
+
+	public static long factorial(long N) {
+		long fac = 1;
+
+		while (N > 1) {
+			fac = (fac * N) % MOD;
+			N--;
+		}
+		return fac;
+	}
+
+	public static long fast_pow(long base, long exp) {
+		long result = 1;
+
+		while (exp > 0) {
+			if (exp % 2 == 1) {
+				result *= base;
+				result %= MOD;
 			}
-			dfs(0, new int[ROUND]);
-			System.out.printf("#%d %d\n", tc, answer);
+			base = (base * base) % MOD;
+			exp /= 2;
 		}
+
+		return result;
 	}
 
-	static void dfs(int depth, int[] result) {
-		if (depth == ROUND) {
-			fallEveryBall(result);
-			answer = Math.min(answer, countRemainBrick());
-			return;
-		}
-		for (int j = 0; j < M; j++) {
-			result[depth] = j;
-			dfs(depth + 1, result);
-		}
-	}
-
-	static void fallEveryBall(int[] result) {
-		processMatrix = new int[N][M];
-		for (int i = 0; i < N; i++)
-			processMatrix[i] = mainMatrix[i].clone();
-
-		for (int col : result) {
-			for (int i = 0; i < N; i++) {
-				if (processMatrix[i][col] != 0) {
-					crash(col, i);
-					fallBrick();
-					break;
-				}
-			}
-		}
-	}
-
-	static void crash(int cx, int cy) {
-		int bombSize = processMatrix[cy][cx];
-		processMatrix[cy][cx] = 0;
-		for (int k = 0; k < 4; k++) {
-			for (int bs = 0; bs < bombSize; bs++) {
-				int nx = cx + dx[k] * bs;
-				int ny = cy + dy[k] * bs;
-				if (0 <= nx && nx < M && 0 <= ny && ny < N && processMatrix[ny][nx] != 0)
-					crash(nx, ny);
-			}
-		}
-	}
-
-	static void fallBrick() {
-		int[][] fallMatrix = new int[N][M];
-		for (int j = 0; j < M; j++) {
-			int idx = N - 1;
-			for (int i = N - 1; i >= 0; i--) {
-				if (processMatrix[i][j] == 0)
-					continue;
-				fallMatrix[idx--][j] = processMatrix[i][j];
-			}
-		}
-
-		processMatrix = fallMatrix;
-	}
-
-	static int countRemainBrick() {
-		int remainBrick = 0;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < M; j++) {
-				if (processMatrix[i][j] > 0)
-					remainBrick++;
-			}
-		}
-		return remainBrick;
-	}
 }
